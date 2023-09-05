@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+    .center-block {
+        display: flex;  /* Instead of display:block */
+        margin-left: auto;
+        margin-right: auto;
+       
+    }
+</style>
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/tendencias-ropa-hombre.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Ingenieria de Plásticos e Impresiones</h2>
+                    <div class="breadcrumb__option">
+                        <a href="{% url 'nucleo:home' %}">Productos</a>
+                        <span>Carrito de Compra</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <pre>
+            {% for existencia in existencias %}
+            {{existencia.0}}
+            {% endfor %}
+        </pre>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="shoping__product">Productos</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order_item in object.items.all %}
+                            <tr>
+                                <td class="shoping__cart__item">
+                                    <h5>{{ order_item.item.item_name }}</h5>
+                                    <p>
+                                        {% if order_item.item.get_qty_stock > 0 %}
+                                            Disponible para surtir
+                                        {% else %}
+                                            No disponible por el momento
+                                        {% endif %}
+                                        
+                                    </p>
+                                </td>
+                                <td class="shoping__cart__price">
+                                    {% if order_item.item.discount_price %}
+                                    <del>${{ order_item.item.price}}</del>
+                                    ${{ order_item.item.discount_price }}
+                                    {% else %}
+                                    ${{ order_item.item.price}}
+                                    {% endif %}
+                                </td>
+                                <td class="shoping__cart__quantity">
+                                    <div class="pro-qty modifyQty">
+                                        <input id="{{order_item.item.pk}}" class="qty-order" type="text" value="{{ order_item.quantity }}" maxlength="4" size="3" min="1" data-pk="{{order_item.item.pk}}"/>
+                                    </div>
+                                </td>
+                                <td class="shoping__cart__total">
+                                    {% if order_item.item.discount_price %}
+                                    ${{ order_item.get_discount_item_price|floatformat }}
+                                    <span class="badge badge-success">Ahorro ${{ order_item.get_amount_saved|floatformat }}</span>
+                                    {% else %}
+                                    ${{ order_item.get_total_item_price|floatformat}}
+                                    {% endif %}
+                                </td>
+                                <td class="shoping__cart__item__close">
+                                    <a href="{% url 'nucleo:remove-from-cart' order_item.item.pk %}"><span class="icon_close"></span></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a href="{% url 'nucleo:home' %}" class="primary-btn">CONTINUAR COMPRANDO</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__continue">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Total</h5>
+                    <ul>
+                        <li>Iva <span>$ {{ object.desglose_orden.acumulado_iva }}</span></li>
+                        <li>Ieps <span>${{ object.desglose_orden.acumulado_ieps }}</span></li>
+                        <li>
+                            Costo de Envio
+                            {% if object.get_total_price <= 2000 %} 
+                                <span>$ 500</span>
+                            {% else %}
+                                <span> Envio Gratis! </span>
+                            {% endif %}
+                        </li>
+                        <li>Total <span>${{ object.desglose_orden.total_orden|intcomma }} MXN</span></li>
+                        
+                    </ul>
+                    <a href="{% url 'nucleo:checkout' %}" class="primary-btn">PROCEDER A PAGO</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shoping Cart Section End -->
+
+{% endblock content %}
+{% block extra_script %}
+<script type="text/javascript">
+
+$(".qtybtn").click(function(){
+    
+    let qty = parseInt($(this).parent().find('input').val());
+    let field = $(this).parent().parent().find('.qty-order').data('pk');
+
+    if($(this).hasClass('dec') && qty > 0){
+        qty -= 1;
+    }else if($(this).hasClass('inc') && qty >= 0){
+        qty += 1;
+    }
+    setTimeout(updateCartQty(field, qty), 700);
+});
+
+$(".qty-order").change(function () {
+    let qty = parseInt($(this).val());
+    let field = $(this).parent().parent().find('.qty-order').data('pk');
+    setTimeout(updateCartQty(field, qty), 700);
+});
+
+function updateCartQty(element,qty){
+     $.ajax({
+        url: "/add-to-cart/" + element + "/" + qty + "/",
+        type: 'POST',
+        dataType: 'JSON',
+        data: {
+            "pk": element,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+    }).then((resp) => {
+        $(this).find('i').removeClass('fa-spin');
+        if (resp.valid) {
+            toastr.info(resp.msj);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            toastr.error(resp.msj);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+    });
+}
+</script>
+{% endblock extra_script %}

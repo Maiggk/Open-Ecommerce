@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load social_share %}
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/tendencias-ropa-hombre.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Open-Ecommerce</h2>
+                    <div class="breadcrumb__option">
+                        <a href="{% url 'nucleo:home' %}">Productos</a>
+                        <span>Detalles de Producto</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Details Section Begin -->
+<section class="product-details spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__pic">
+                    <div class="product__details__pic__item">
+                        <img class="product__details__pic__item--large" src="{{ object.get_image_product }}" alt="{{ image.altDescription }}">
+                    </div>
+                    <div class="product__details__pic__slider owl-carousel">
+                    {% for image in object.itemimage_set.all %}
+                        <img data-imgbigurl="{{ image.image.url }}" src="{{ image.image.url }}" alt="{{ image.altDescription }}">
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__text">
+                    <h3>{{ object.item_name }}</h3>
+                    <div class="product__details__price">
+                        {% if object.discount_price %} 
+                        ${{object.discount_price}} &nbsp;<span class="product__discount__item__text product__item__price" style="padding: 0px!important;text-decoration:line-through;">${{ item.price }}</span>
+                        {% else %}
+                        ${{ item.price }}
+                    {% endif %}</div>
+                    <p>{{ object.description | safe}}</p>
+                 
+                    <a href="#" class="btn primary-btn addCart" data-pk="{{object.pk}}"> <i class="fa fa-plus"></i> Carrito
+                        <i class="fa fa-shopping-cart ml-1"></i>
+                    </a>
+                    
+                    {{ object.get_quantity_in_chart }}
+                    <a href="{{ object.get_remove_from_cart_url }}" class="danger-btn"><i class="fa fa-minus"></i> Carrito
+                        <i class="fa fa-trash ml-1"></i>
+                    </a>
+                    <ul>
+                        <li><b>Disponibilidad</b> <span>{% if object.active %} En Stock {% else %} No disponible {% endif %} 
+                        </span></li>
+                        <li><b>Compartir</b>
+                            
+                            <div class="share">
+                                <div class="share">
+                                    {% post_to_facebook 'https://es-es.facebook.com' '<i class="fa fa-facebook"></i>' %}
+                                    {% post_to_twitter "{{object.item_name}}. Encontre estre producto increible!" object_or_url '<i class="fa fa-twitter"></i>' %}
+                                    <a href="#"><i class="fa fa-instagram"></i></a>
+                                    <a href="#"><i class="fa fa-pinterest"></i></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="product__details__tab">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"
+                                aria-selected="true">Descripcion</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                <h6>Informacion de {{ object.item_name }}</h6>
+                                <p>{{ object.indications| safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+{% block extra_script %}
+<script>
+$(document).ready(()=>{
+    $('.addCart').click(function (e) {
+        e.preventDefault();
+        $(this).find('i').addClass('fa-spin');
+        let pk = $(this).data('pk');
+        $.ajax({
+            url: "/add-to-cart/"+pk+"/1/",
+            type: 'POST',
+            dataType: 'JSON',
+            beforeSend:function(){
+                $(this).find('i').addClass('fa-spin');
+            },
+            error: function () {
+                $(this).find('i').removeClass('fa-spin');
+            },
+            data: {
+                "pk": pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+        }).then((resp) => {
+            if (resp.valid) {
+                toastr.info(resp.msj);
+                window.location.href='/order-summary/';
+            } else {
+                toastr.error(resp.msj);
+            }
+        });
+    });
+});
+</script>
+{% endblock extra_script %}

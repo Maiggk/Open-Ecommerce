@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es-mx">
+{% load static %}
+{% load humanize %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Open Ecommerce Python">
+    <meta name="keywords" content="ecommerce,python, gnu-licence">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Open Ecommerce</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon_ecommerce.ico' %}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" type="text/css">
+    {% block extra_head %}
+    {% endblock extra_head %}
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo text-center">
+            <a href="{% url 'nucleo:home' %}"><img src="{% static 'img/ecommerce-website-square.jpg' %}" alt=""></a>
+        </div>
+        <div class="humberger__menu__cart">
+            {% if user.is_authenticated %}
+                <ul>
+                    <li><a href="{% url 'nucleo:order-summary' %}"><i class="fa fa-shopping-cart"></i> <span>{{ order_cart.get_total_items}}</span></a></li>
+                </ul>
+                <div class="header__cart__price">Productos: <span>${{ order_cart.get_total_price|intcomma }} mxn</span></div>
+            {% endif %}
+        </div>
+        <div class="humberger__menu__widget">
+            <div class="header__top__right__language">
+                <img src="{% static 'img/mexico.png' %}" alt="">
+                <div>Español (MXN)</div>
+                <ul>
+                    <li><a href="#">Español</a></li>
+                </ul>
+            </div>
+            <div class="header__top__right__auth">
+            {% if user.is_authenticated %}
+                Hola {{ user.username }}!
+                <div class="btn-group" role="group" aria-label="">
+                    <a href="{% url 'account_logout' %}"> <i class="fa fa-sign-out"></i>logout</a>
+                    &nbsp; | &nbsp; <a href="{% url 'nucleo:profile-user' %}"> <i class="fa fa-profile"></i>Perfil</a>
+                    &nbsp; | &nbsp; <a href="{% url 'nucleo:profile-user' %}"> <i class="fa fa-profile"></i>Historial Compras</a>
+                </div>
+            {% else %}
+                <a href="{% url 'account_login' %}"><i class="fa fa-user"></i> Login</a>
+            {% endif %}
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="{% url 'nucleo:home' %}">Productos</a></li>
+                <li><a href="{% url 'nucleo:order-summary' %}">Carrito</a></li>
+                {% if user.is_authenticated %}
+                <li class="{% if url_name == 'profile-user' %}active{% endif %}"><a href="{% url 'nucleo:profile-user' %}">Perfil</a></li>
+                <li><a href="{% url 'nucleo:profile-user' %}">Historial Compras</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+        <div class="header__top__right__social">
+            <a href="https://www.facebook.com/ArandaPets" target="_blank"><i class="fa fa-facebook"></i></a>
+        </div>
+        <div class="humberger__menu__contact">
+            <ul>
+                <li><i class="fa fa-envelope"></i> contacto.ecommerce@open-ecommerce.com</li>
+                <li>Envio gratis a partir de $599</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Humberger End -->
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i> contacto.ecommerce@open-ecommerce.com</li>
+                                <li>Envio gratis a partir de $599</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                            <div class="header__top__right__language">
+                                <img src="{% static 'img/mexico.png' %}" alt="">
+                                <div>Español (MXN)</div>
+                                <ul>
+                                    <li><a href="#">Español</a></li>
+                                </ul>
+                            </div>
+                            <div class="header__top__right__auth">
+                                {% if user.is_authenticated %}
+                                    Hola {{ user.username }}! <a href="{% url 'account_logout' %}"><i class="fa fa-sign-out"></i>logout</a> 
+                                {% else %}
+                                    <a href="{% url 'account_login' %}"><i class="fa fa-user"></i> Login</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo text-center">
+                        <a href="{% url 'nucleo:home' %}"><img src="{% static 'img/ecommerce-website-square.jpg' %}" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul style="text-align: center !important;">
+                            {% with request.resolver_match.url_name as url_name %}
+                            <li class="{% if url_name == 'home' %}active{% endif %}"><a href="{% url 'nucleo:home' %}">Productos</a></li>
+                            <li class="{% if url_name == 'order-summary' %}active{% endif %}"><a href="{% url 'nucleo:order-summary' %}">Carrito</a></li>
+                            {% if user.is_authenticated %}
+                            <li class="{% if url_name == 'profile-user' %}active{% endif %}"><a href="{% url 'nucleo:profile-user' %}">Perfil</a></li>
+                            <li ><a href="{% url 'nucleo:profile-user' %}">Historial Compras</a></li>
+                            {% endif %}
+                            {% endwith %}
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    {% if user.is_authenticated %}
+                    <div class="header__cart">
+                        {% if order_cart.get_total_items %}
+                        <ul>
+                            <li><a href="{% url 'nucleo:order-summary' %}"><i class="fa fa-shopping-cart"></i> <span>{{ order_cart.get_total_items }}</span></a></li>
+                        </ul>
+                        <div class="header__cart__price">Productos: <span>${{ order_cart.get_total_price|floatformat|intcomma }} mxn</span></div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section Begin -->
+    <section class="hero hero-normal">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>Categorias</span>
+                        </div>
+                        <ul>
+                            {% for key,categoria in categorias %}
+                                <li><a href="{% url 'nucleo:home_category' key %}">{{categoria}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="{% url 'nucleo:home_search' %}">
+                                <input name="q" type="text" placeholder="¿Que producto buscas?">
+                                <button type="submit" class="site-btn">BUSCAR</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>+01 555 0123</h5>
+                                <span>Contacto</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% for message in messages %}
+    <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="True">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+    <!-- Hero Section End -->
+
+    <!-- Navbar -->
+    {% block content %}
+    {% endblock content %}
+
+
+    {% include "footer.html" %}
+
+
+    {% include "script.html" %}
+
+    {% block extra_script %}
+    {% endblock extra_script %}
+</body>
+
+</html>

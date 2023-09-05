@@ -1,0 +1,87 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es-mx">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Open-Ecommerce Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/login.style.css' %}" type="text/css">
+</head>
+
+<body>
+    <div class="login-form">
+        <form class="login" method="POST" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            <div class="text-center">
+                <img src="{% static 'img/ecommerce-website-square.jpg' %}" alt="">
+            </div>
+            <hr>
+            <h4 class="text-center">Regístrarse</h4>
+            <p><i>Crea tu cuenta para tener mas beneficios</i></p>
+            <div class="or-seperator"></div>
+            {{ field.errors }}
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label_tag }}</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <span class="fa fa-envelope"></span>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.name }}"
+                        placeholder="Email" maxlength="{{ form.email.field.max_length }}" {% if form.email.field.required%}required{% endif %}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label_tag }}</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <span class="fa fa-user"></span>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="{{ form.username.name }}"
+                        placeholder="Username" maxlength="{{ form.username.field.max_length }}" {% if form.username.field.required%}required{% endif %}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label_tag }}</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-lock"></i>
+                        </span>
+                    </div>
+                    <input type="password" class="form-control" id="{{ form.password1.id_for_label }}"
+                        name="{{ form.password1.name }}" placeholder="Password" maxlength="{{ form.password1.field.max_length }}" {% if form.password1.field.required %}required{% endif %}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label_tag }}</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-lock"></i>
+                        </span>
+                    </div>
+                    <input type="password" class="form-control" id="{{ form.password2.id_for_label }}"
+                        name="{{ form.password2.name }}" placeholder="Password" maxlength="{{ form.password2.field.max_length }}" {% if form.password2.field.required %}required{% endif %}>
+                </div>
+            </div>
+            <div class="text-justify">
+                <a style="font-size: x-small;" target="_blank" href="{% static 'file/terminos_y_condiciones.pdf' %}">Al registrarse aceptas los terminos y condiciones de la plataforma.</a>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-success btn-block login-btn primaryAction">{% trans "Sign Up" %}</button>
+        </form>
+    </div>
+</body>
+        
+</html>

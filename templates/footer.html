@@ -1,0 +1,65 @@
+{% load static %}
+<!-- Footer Section Begin -->
+<footer class="footer spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="footer__about">
+                    <div class="footer__about__logo">
+                        <a href="{% url 'nucleo:home' %}"><img src="{% static 'img/ecommerce-website-logo.jpg' %}" alt=""></a>
+                    </div>
+                    <ul>
+                        <li>Av. P.º de la Reforma 439</li>
+                        <li>Del. Cuauhtémoc</li>
+                        <li>Ciudad de México, CDMX</li>
+                        <li>C.P. 06000</li>
+                        <li>Tel: +01 555 0123</li>
+                        <li>Email: contacto.ecommerce@open-ecommerce.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                <div class="footer__widget">
+                    <h6>Mapa del sitio</h6>
+                    <ul>
+                        <li class="active"><a href="{% url 'nucleo:home' %}">Productos</a></li>
+                        <li><a href="{% url 'nucleo:order-summary' %}">Carrito</a></li>
+                        <li><a href="{% url 'nucleo:profile-user' %}">Perfil Usuario</a></li>
+                        <li><a href="{% url 'nucleo:profile-user' %}">Historial de compras</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="footer__widget">
+                    <h6>Contactanos</h6>
+                    <form action="#">
+                        <input type="text" placeholder="Nombre">
+                        <input type="text" placeholder="Email">
+                        <button type="submit" class="site-btn">Enviar</button>
+                    </form>
+                    <div class="footer__widget__social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-instagram"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="footer__copyright">
+                    <div class="footer__copyright__text">
+                        <p>
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> Licencia GNU v3 |  Open-Ecommerce by <a href="https://github.com/Maiggk"> @Maiggk</a>
+                            <p style="display: none;"></p>
+                        </p>
+                    </div>
+                    <div class="footer__copyright__payment"><img src="{% static 'img/payment-item.png' %}" alt=""></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Footer Section End -->

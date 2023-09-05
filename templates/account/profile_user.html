@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+
+.form-control:focus {
+    box-shadow: none;
+    /* border-color: #BA68C8 */
+}
+
+a:hover,a:focus{
+    color:#007FA8;
+}
+
+.labels {
+    font-size: 11px
+}
+
+.titulo_price{
+    font-size: 20px;
+    font-weight:700;
+    color:black;
+    padding-right: 40px;
+}
+</style>
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="{% static 'img/user_profile.png' %}">
+                    <span class="font-weight-bold">{{request.user.username}}</span><span class="text-black-50">{{request.user.email}}</span><span>
+                </span></div>
+        </div>
+        <div class="col-md-4 border-right">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="p-3 py-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Perfil de Usuario</h4>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6"><label class="labels">Nombre</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6"><label class="labels">Apellido</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">Calle & Numero</label>
+                            {{ form.street_address }}
+                        </div>
+                        <div class="col-md-12"><label class="labels">Codigo Postal</label>
+                            {{ form.zip }}
+                        </div>
+                        <div class="col-md-12"><label class="labels">Colonia</label>
+                            <select class="form-control wide" name="settlement_name" id="settlement_name" required>
+                                {% if form.settlement_name.value == '' %}
+                                    <option value="" selected="selected" >selecciona colonia</option>
+                                {% endif %}
+                                {% for settlement in settlement_places %}
+                                    {% if form.settlement_name.value == settlement.place %}
+                                        <option value="{{form.settlement_name.value}}" selected="selected" >{{form.settlement_name.value}} [{{settlement.municipality}}]</option>
+                                    {% endif %}
+                                    <option value="{{ settlement.place }}">{{ settlement.place }}  [{{settlement.municipality}}]</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12"><label class="labels">RFC (*Facturacion)</label>
+                            {{ form.rfc }}
+                        </div>
+                        <div class="col-md-12"><label class="labels">Telefono</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Salvar Cambios</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-right">Ultimas Compras</h4>
+            </div>
+            <div class="shoping__cart__table" style="max-height: 400px;overflow: auto;">
+                <table>
+                    <tbody>
+                        {% for hist in historial %}
+                        <tr>
+                            <td>
+                                <a class="viewOrder" data-order="{{hist.pk}}"  href="#" data-toggle="modal" data-target="#modalOderDetail" ><i class="fa-solid fa-up-right-from-square" title="Detalles Compra"></i></a>
+                            </td>
+                            <td class="shoping__cart__item"  style="text-align: right !important;">
+                                <h5>${{ hist.amount }}</h5>
+                            </td>
+                            <td class="shoping__cart__item text-center">
+                                <a target="_blank" href="{% url 'nucleo:pdf-detail' hist.pk %}"> <i class="fa fa-file-pdf"></i> Recibo</a>
+                            </td>
+                            <td class="shoping__cart__quantity">
+                                {{ hist.timestamp }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td>No hay historial de compras</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalOderDetail" tabindex="-1" role="dialog" aria-labelledby="modalOrderLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalOrderLabel">Detalles de Compra</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="fecha_pedido"> <b>Fecha</b></label>
+                        <p id="fecha_pedido"></p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <label> <b>Emisor</b></label>
+                        <p>Open-Ecommerce<br>
+                        Av. P.º de la Reforma 439<br>
+                        Del. Cuauhtémoc
+                        Ciudad de México, CDMX</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="cliente_pedido"> <b>Cliente</b></label>
+                        <p id="cliente_pedido">{{request.user.get_full_name}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="clave_orden_pedido"> <b>#Orden</b></label>
+                        <p id="clave_orden_pedido"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="estatus_orden_pedido"> <b>Estatus Orden</b></label>
+                        <p id="estatus_orden_pedido"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="direccion_pedido"><b>Direccion Entrega</b></label>
+                        <p id="direccion_pedido"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="medio_pago_pedido"><b>Medio de pago</b> </label>
+                        <p id="medio_pago_pedido"></p>
+                    </div>
+                </div>
+                <br>
+                <div class="col-lg-12">
+                    <div class="shoping__cart__table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="shoping__product">Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Descuento</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cve_detalleCompra">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-right titulo_price"> <b> Ieps: &nbsp; &nbsp;&nbsp; <span id="total_iva_hist"></span></b></p>
+                    <p class="text-right titulo_price"> <b> Iva: &nbsp; &nbsp;&nbsp; <span id="total_ieps_hist"></span></b></p>
+                    <p class="text-right titulo_price"> <b> Total: &nbsp; &nbsp;&nbsp; <span id="total_compra_hist"></span></b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block extra_script %}
+<script>
+    
+    var crsf = $("input[name=csrfmiddlewaretoken]").val();
+    $(document).on('click','.viewOrder',function (e) {
+        e.preventDefault();
+        var order = $(this).data('order');
+        
+        $.ajax({
+            type: 'POST',
+            url: '/detail-oder/'+order,
+            data: { "or_id": order},
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": crsf,
+            },
+            success: function (response) {
+                if (!response["valid"]) {
+                    alert("You cannot create a friend with same nick name");
+                }
+                $("#fecha_pedido").html($.datepicker.formatDate(response.data.fecha_orden, 'dd M yy'));
+                $("#cliente_pedido").html(response.data.user);
+                $("#direccion_pedido").html(response.data.direccionEnvio);
+                $("#medio_pago_pedido").html(response.data.tipo_pago);
+                $("#clave_orden_pedido").html(response.data.clave_orden);
+                $("#estatus_orden_pedido").html(response.data.estatusOrden);
+                $("#cve_detalleCompra").empty();
+                let tot_iva = 0;
+                let tot_ieps = 0;
+                let tot_final = 0;
+                $.each(response.data.detalle,(key,elem)=>{
+                    tot_iva += elem.desglose.impuesto_iva;
+                    tot_ieps += elem.desglose.impuesto_ieps;
+                    tot_final += elem.desglose.total_final
+                    $("#cve_detalleCompra").append(`<tr>
+                                        <td class="shoping__cart__item">
+                                            <h5>`+ elem.itemName +`</h5>
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            `+ elem.itemQty +`
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            `+ elem.desglose.precio +`
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            `+ elem.desglose.descuento +`
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            <b>$`+ elem.desglose.subtotal +`</b>
+                                        </td>
+                                    </tr>`);
+                });
+                $("#total_iva_hist").html('$' + tot_iva);
+                $("#total_ieps_hist").html('$' + tot_ieps);
+                $("#total_compra_hist").html('$' + tot_final);
+
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        });
+    });
+
+    $("#settlement_name").niceSelect('destroy');
+
+    $("#id_zip").on('focusout',()=>{
+        let cpvalidate = $("#id_zip").val();
+        if(!validCpMx(cpvalidate)){
+            $("#id_zip").addClass(' is-invalid');
+            $('#settlement_name').empty().niceSelect('update');
+        }else{ 
+            $("#id_zip").removeClass(' is-invalid'); 
+            $('select').niceSelect('update');
+            $.ajax({
+                url: "{% url 'nucleo:profile-user' %}",
+                type: 'POST',
+                dataType:'JSON',
+                data: { "action":"getZip","zip": cpvalidate ,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}' },
+            }).then((resp)=>{
+                $('#settlement_name').empty();
+                var option = $('<option/>');
+                option.attr({ 'value': "" }).text("selecciona colonia");
+                $('#settlement_name').append(option).niceSelect('update');
+                $.each(resp.places,(k,v)=>{
+                    var option = $('<option/>');
+                    option.attr({ 'value': v[1] }).text(v[1] + '[' + v[3] + ']');
+                    $('#settlement_name').append(option).niceSelect('update');
+                    $('#settlement_name').niceSelect('update');
+                });
+            });
+        }
+        
+    });
+</script>
+{% endblock extra_script %}

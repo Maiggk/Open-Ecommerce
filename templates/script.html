@@ -1,0 +1,107 @@
+{% load static %}
+<!-- Js Plugins -->
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/jquery.slicknav.js' %}"></script>
+<script src="{% static 'js/mixitup.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<!-- Initializations -->
+<script type="text/javascript">
+    let position;
+    storage = window.localStorage;
+    if(storage.getItem('requestLocation') != 'N'){
+        if(!storage.getItem('clientLocation') || storage.getItem('requestLocation') == 'N'){
+            getLocation();
+        }
+    }
+
+function getLocation(){
+    const timeoutVal = 10 * 1000 * 1000;
+    navigator.geolocation.getCurrentPosition(
+        ((position) => {
+            const { latitude, longitude } = position.coords;
+            clientLocation = { latitude: latitude,longitude: longitude, type:'latlang',cp:null}
+            console.log("Save locations localStorage latlang");
+            storage.setItem('clientLocation', JSON.stringify(clientLocation))
+        }),
+        ((error) => {
+            const errors = {
+                1: 'Permission denied',
+                2: 'Position unavailable',
+                3: 'Request timeout'
+            };
+            console.error("Error: " + errors[error.code]);
+            requestCp();
+        }),
+        { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+    );
+}
+
+function requestCp(){
+    Swal.fire({
+        title: 'Para mejorar la experiencia',
+        input: 'number',
+        inputLabel: 'Ingrese su codigo postal',
+        showCancelButton: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Ingresa con tu codigo postal!'
+            }
+            if (!validCpMx(value)) {
+                return 'Codigo postal no valido';
+            }
+        }
+    }).then((resp)=>{ 
+        console.log(resp);
+        if(resp.isConfirmed){
+            clientLocation = { latitude: null, longitude: null, cp: resp.value, type: 'postalcode' };
+            console.info("Geolocation is not supported by this browser, use postal code");
+            console.log("Save locations localStorage cp", clientLocation);
+            storage.setItem('clientLocation', JSON.stringify(clientLocation))
+        }else{
+            storage.setItem('requestLocation','N');
+            console.warn("Request CP denied, not ask again");
+        }
+    });
+    
+}
+
+function validCpMx(a) {
+    return a.length > 4
+        && /^\d{5}$/.test(a)
+        && 12345 != a
+        && !/0{5}/.test(a)
+        && !/1{5}/.test(a)
+        && !/2{5}/.test(a)
+        && !/3{5}/.test(a)
+        && !/4{5}/.test(a)
+        && !/5{5}/.test(a)
+        && !/6{5}/.test(a)
+        && !/7{5}/.test(a)
+        && !/8{5}/.test(a)
+        && !/9{5}/.test(a);
+}
+</script>
+<script>
+    toastr.options = {
+        "closeButton": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": true,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+</script>
