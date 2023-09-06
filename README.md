@@ -17,6 +17,10 @@ Python Ecommerce site with some basic-intermedium functionalities to experience 
 - Perfil de aministracion con los datos de usuario
 
 
+## Environment Variables
+
+Para iniciar correctamente la aplicacion se necesita que se proporcionen las variables de entorno en el archivo `.env` Dentro de la carpeta raiz del proyecto
+
 ## Deployment
 
 Para inicializar el proyecto hay que realizar un par de pasos
@@ -40,10 +44,6 @@ opcionalmente inicia en el puerto/ip que desees
 ```bash
   > py manage.py runserver 192.168.0.10:70000
 ```
-
-## Environment Variables
-
-Para iniciar correctamente la aplicacion se necesita que se proporcionen las variables de entorno en el archivo `.env` Dentro de la carpeta raiz del proyecto
 
 ## Screenshots
 ### Main
