@@ -25,6 +25,11 @@ Para iniciar correctamente la aplicacion se necesita que se proporcionen las var
 
 Para inicializar el proyecto hay que realizar un par de pasos
 
+0.- Instalacion de dependencias
+```bash
+  > pip install -r requirements.txt
+```
+
 1.- Crear la base de datos
 
 ```bash
