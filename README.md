@@ -52,8 +52,8 @@ opcionalmente inicia en el puerto/ip que desees
 
 ## Screenshots
 ### Main
-![Main Page](https://1drv.ms/i/s!ApWHidi6zWHjimqibb6lr4zrfSW8?e=E8OnJx)
+![Main Page](https://i.postimg.cc/D0XwhLJv/main-page.png)
 ### Productos
-![Productos](https://1drv.ms/i/s!ApWHidi6zWHjimtC9EXlghRumGxb?e=PEmEu2)
+![Productos](https://i.postimg.cc/SKgsfybh/productos.png)
 ### Detalle
-![Productos](https://1drv.ms/i/s!ApWHidi6zWHjimjINL4MoEstuGsr?e=8rYeNt)
+![Productos](https://i.postimg.cc/1tT3bJz7/producto-detalle.png)
